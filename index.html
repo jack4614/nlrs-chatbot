@@ -503,7 +503,7 @@ async function typeText(msgEl, fullText) {
 }
 
 async function send(text) {
-  if (!text || !apiKey) return;
+  if (!text) return;
   addUserMsg(text);
   history.push({ role: 'user', content: text });
   showTyping();

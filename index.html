@@ -213,8 +213,11 @@ Rates per person double occupancy: Twin CA$5,175 / King CA$5,375 / Glass CA$6,27
 
 AURORA360 ARCTIC DISCOVERY — WINTER EDITION (Feb 4-9 & Feb 6-11, 2027 — 5 nights)
 IMPORTANT: Feb 4 and Feb 6 arrivals are EXCLUSIVELY reserved for Aurora360. There are NO regular Winter at Its Best or Winter at Its Best Plus packages available with Feb 4 or Feb 6 arrivals. Do not suggest Feb 4 or Feb 6 as regular package arrival dates under any circumstances.
-An extraordinary exclusive package with two departure date options. For pricing and full details please contact us directly — we are happy to arrange a callback or send the full brochure.
-Highlights: exclusive Air North charter flight to the Arctic Circle with guaranteed window seat for every guest, round-trip Air North flights from Vancouver, all gourmet meals at resort and hotel, nightly aurora viewing (10pm-2am) with professional photos, Wildlife Preserve & Eclipse Hot Springs, Husky Rush — meet sled dogs and learn about Yukon mushing culture (exclusive to this package only), snowmobiling, Aurora Basecamp BBQ lunch with maple toffee, Winter Clothes Rental included, airport transfers.
+
+When describing Aurora360, convey genuine excitement — this is the most extraordinary and unique Northern Lights experience we offer, unlike anything else available. The centrepiece is an exclusive charter flight: a Boeing 737-800 aircraft with 174 seats, carrying only 32 guests — meaning the plane is nearly empty and every single guest has a guaranteed window seat with an unobstructed view. The flight heads to the Arctic Circle, approximately 2.5 to 3 hours in the air, usually departing around midnight when aurora conditions are at their peak. Witnessing the Northern Lights from 35,000 feet above the earth, in near-total darkness, with almost no one else on board, is something very few people in the world will ever experience.
+
+Two departure date options: Feb 4-9 and Feb 6-11, 2027. For pricing and full details please contact us directly — we are happy to arrange a callback or send the full brochure.
+Additional highlights: round-trip Air North flights from Vancouver included, all gourmet meals at resort and hotel, nightly aurora viewing (10pm-2am) with professional photos, Wildlife Preserve & Eclipse Hot Springs, Husky Rush — meet sled dogs and learn about Yukon mushing culture (exclusive to this package only), snowmobiling, Aurora Basecamp BBQ lunch with maple toffee, Winter Clothes Rental included, airport transfers.
 
 ADDITIONAL TOURS & EXPERIENCES (extra cost, bookable as add-ons)
 - Yukon Wildlife Preserve & Eclipse Nordic Hot Springs: CA$279/person + 5% GST. Year-round. Included in many packages.
@@ -250,7 +253,7 @@ CHECK-IN & CHECK-OUT
 Check-in: after 3:00pm. Check-out: 10:00am.
 
 AURORA BOREALIS & NIGHT EXPERIENCE
-Visible late August through April. Full moon does NOT negatively impact viewing — confirmed over 10+ years. Nightly guided viewing at the bonfire 10pm-2am (some packages 10pm-2am). Wake-up service included. Aurora alarm: a bell rings in your chalet when the lights appear. Our guides photograph guests with the aurora; photos available to download after your stay.
+Visible late August through April. Full moon does NOT negatively impact viewing — confirmed over 10+ years. Nightly guided viewing at the bonfire 10pm-2am (some packages 10pm-2am). Wake-up service included. Aurora alarm: a bell rings in your chalet between 10pm and 2am when the Northern Lights appear. The alarm operates during the same hours as our night guides and bonfire — 10pm to 2am only. Our guides photograph guests with the aurora; photos available to download after your stay.
 Live success rates: northernlightsyukon.com/our-resort/aurora-viewing-success-rate/
 2025/26 actual success rates: 4-night 96%, 5-night 96%, 7-night 99%.
 IMPORTANT: These success rates mean the percentage of GUESTS who saw the Northern Lights at least once during their stay — NOT the percentage of nights with aurora visibility. Most guests see the aurora multiple times during their stay, but we cannot guarantee every single night as the aurora is a natural phenomenon. Never say or imply the success rate refers to nightly visibility.
@@ -553,6 +556,15 @@ async function send(text) {
       if (/family-friendly recommendations|pass your details|southern lakes/i.test(fullText)) {
         familyPending = true;
       }
+      // Store last topic for returning visitor greeting
+      const userMsg = history.filter(m => m.role === 'user').slice(-1)[0]?.content?.toLowerCase() || '';
+      if (/availab|book|reserv/.test(userMsg)) localStorage.setItem('nlrs_last_topic', 'availability and bookings');
+      else if (/pric|rate|cost|how much/.test(userMsg)) localStorage.setItem('nlrs_last_topic', 'pricing');
+      else if (/package|night|stay/.test(userMsg)) localStorage.setItem('nlrs_last_topic', 'our packages');
+      else if (/aurora|northern light|light/.test(userMsg)) localStorage.setItem('nlrs_last_topic', 'aurora viewing');
+      else if (/chalet|cabin|room/.test(userMsg)) localStorage.setItem('nlrs_last_topic', 'our chalets');
+      else if (/activ|snowmobil|dog sled|husky|fishing/.test(userMsg)) localStorage.setItem('nlrs_last_topic', 'activities');
+      else if (/food|meal|diet|menu|dinner/.test(userMsg)) localStorage.setItem('nlrs_last_topic', 'dining');
     }
   } catch (e) {
     removeTyping();
@@ -822,9 +834,25 @@ document.getElementById('inp').addEventListener('input', function () {
 });
 
 
-// Auto-start on Vercel — no key needed
+// Auto-start on Vercel — returning visitor detection
 window.addEventListener('DOMContentLoaded', () => {
-  addBotMsg("Welcome to Northern Lights Resort & Spa! I'm happy to answer your questions about our packages, chalets, aurora viewing, and everything about your stay. How can I help you?");
+  const visitKey = 'nlrs_visited';
+  const topicKey = 'nlrs_last_topic';
+  const isReturning = localStorage.getItem(visitKey);
+  const lastTopic = localStorage.getItem(topicKey);
+
+  // Mark as visited
+  localStorage.setItem(visitKey, 'true');
+
+  let welcome;
+  if (!isReturning) {
+    welcome = "Welcome to Northern Lights Resort & Spa! I'm happy to answer your questions about our packages, chalets, aurora viewing, and everything about your stay. How can I help you?";
+  } else if (lastTopic) {
+    welcome = `Welcome back! Last time you were asking about ${lastTopic}. Can I help you further with that, or is there something else I can assist you with?`;
+  } else {
+    welcome = "Welcome back to Northern Lights Resort & Spa! Great to see you again. Can I help you with availability, packages, or any questions about your visit?";
+  }
+  addBotMsg(welcome);
 });
 </script>
 </body>

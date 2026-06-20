@@ -428,9 +428,7 @@ async function send(text) {
       const avRes = await fetch('/api/availability');
       const avData = await avRes.json();
       if (avData.success) {
-        availabilityContext = '
-
-' + avData.data;
+        availabilityContext = '\n\n' + avData.data;
       }
     } catch(e) {
       console.log('Availability fetch failed:', e.message);
@@ -439,10 +437,7 @@ async function send(text) {
 
   // Inject live availability into the system prompt if we have it
   const systemWithAvail = availabilityContext
-    ? SYSTEM + '
-
-LIVE AVAILABILITY (use this for any availability questions):
-' + availabilityContext
+    ? SYSTEM + '\n\nLIVE AVAILABILITY (use this for any availability questions):\n' + availabilityContext
     : SYSTEM;
 
   try {
